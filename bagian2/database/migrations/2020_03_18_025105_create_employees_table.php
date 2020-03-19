@@ -16,7 +16,7 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('company_id')->unsigned();
+            $table->foreignId('company_id');
             $table->string('email');
             $table->timestamps();
 

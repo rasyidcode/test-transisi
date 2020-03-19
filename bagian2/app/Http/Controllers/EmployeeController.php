@@ -14,9 +14,9 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $users = Employee::paginate(15);
+        $employees = Employee::with('company')->paginate(5);
 
-        return view('employee.index');
+        return view('employees.index', compact('employees'));
     }
 
     /**
@@ -26,7 +26,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employee.create');
+        $companies = \App\Company::latest()->get();
+        return view('employees.create', compact('companies'));
     }
 
     /**
@@ -39,14 +40,14 @@ class EmployeeController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string',
-            'email' => 'required|string',
-            'logo' => 'required|string',
-            'website' => 'required|string'
+            'company_id' => 'required',
+            'email' => 'required|email'
         ]);
-
+        
+        // dd($validatedData);
         Employee::create($validatedData);
 
-        return redirect('company')->withMessage('Data company created.');
+        return redirect('employees')->withMessage('Employee created.');
     }
 
     /**
@@ -57,7 +58,10 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        return view('employee.show', $employee);
+        $test = \Carbon\Carbon::create(2020, 3, 17, 04, 0, 0, 'Asia/Jakarta');
+        dd($test->add(36, 'hour'));
+        $emp = Employee::with('company')->where('id', $employee->id)->first();
+        return view('employees.show', compact('emp'));
     }
 
     /**
@@ -68,7 +72,8 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        
+        $companies = \App\Company::latest()->get();
+        return view('employees.edit', compact('employee', 'companies'));
     }
 
     /**
@@ -80,7 +85,15 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'company_id' => 'required',
+            'email' => 'required|email'
+        ]);
+
+        $employee->update($validatedData);
+
+        return redirect('employees')->withMessage('Company updated.');
     }
 
     /**
@@ -91,6 +104,8 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        //
+        $employee->delete();
+
+        return redirect('employees')->withMessage('Data company deleted.');
     }
 }

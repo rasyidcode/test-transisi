@@ -9,4 +9,10 @@ class Company extends Model
     protected $table = 'companies';
 
     protected $guarded = [];
+
+    protected $with = ['employees'];
+
+    public function employees() {
+        return $this->hasMany(Employee::class);
+    }
 }
